@@ -1,0 +1,9 @@
+node_modules
+
+.git
+.vscode
+.cursor
+.env
+
+server/prisma/migrations
+server/src/generated
