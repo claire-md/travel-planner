@@ -59,9 +59,17 @@ const createTrip = async (req: JWTRequest, res: Response) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  // Date inputs submit `yyyy-MM-dd`, but Prisma requires a full DateTime.
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return res.status(400).json({ message: "Invalid start or end date" });
+  }
+
   // Create the trip
   const trip = await prisma.trip.create({
-    data: { userId, title, destination, startDate, endDate },
+    data: { userId, title, destination, startDate: start, endDate: end },
   });
 
   return res.status(201).json({ status: "success", data: { trip } });
@@ -101,10 +109,18 @@ const updateTrip = async (req: JWTRequest, res: Response) => {
     return res.status(404).json({ message: "Trip not found" });
   }
 
+  // Date inputs submit `yyyy-MM-dd`, but Prisma requires a full DateTime.
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return res.status(400).json({ message: "Invalid start or end date" });
+  }
+
   // Update the trip
   const updatedTrip = await prisma.trip.update({
     where: { id: tripId, userId },
-    data: { title, destination, startDate, endDate },
+    data: { title, destination, startDate: start, endDate: end },
   });
 
   return res
