@@ -30,8 +30,8 @@ model Trip {
   user        User     @relation(fields: [userId], references: [id])
   title       String
   destination String
-  startDate   DateTime
-  endDate     DateTime
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -42,7 +42,7 @@ model Itinerary {
   id        String   @id @default(uuid())
   tripId    String
   trip      Trip     @relation(fields: [tripId], references: [id])
-  date      DateTime
+  date      DateTime @db.Date
   day       Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -56,8 +56,8 @@ model Activity {
   itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
   title       String
   location    String
-  startTime   DateTime
-  endTime     DateTime
+  startTime   DateTime @db.Time
+  endTime     DateTime @db.Time
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
