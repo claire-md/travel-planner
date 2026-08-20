@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express, { type Express, type Request, type Response } from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import { connectDB, disconnectDB } from "./db/prisma.ts";
 import authRoutes from "./routes/authRoutes.ts";
 import tripRoutes from "./routes/tripRoutes.ts";
@@ -11,6 +12,15 @@ connectDB();
 const app: Express = express();
 
 // Middleware
+app.use(
+  cors({
+    origin:
+      process.env.ENVIRONMENT === "development"
+        ? process.env.DEV_CLIENT_URL
+        : process.env.PROD_CLIENT_URL,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
