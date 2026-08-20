@@ -28,6 +28,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} scroll-smooth`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="bg-primary antialiased">

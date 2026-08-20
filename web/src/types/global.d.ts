@@ -1,9 +1,8 @@
 interface User {
-  id: string;
   firstName: string;
   lastName: string;
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
 }
 
 interface Trip {
