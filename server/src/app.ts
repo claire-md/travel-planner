@@ -3,6 +3,7 @@ import express, { type Express, type Request, type Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { connectDB, disconnectDB } from "./db/prisma.ts";
+import { requireAuth } from "./middleware/requireAuth.ts";
 import authRoutes from "./routes/authRoutes.ts";
 import tripRoutes from "./routes/tripRoutes.ts";
 
@@ -27,7 +28,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/trips", tripRoutes);
+app.use("/api/trips", requireAuth, tripRoutes);
 app.get("/", (req: Request, res: Response) => {
   res.send("Home");
 });
