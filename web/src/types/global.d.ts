@@ -6,19 +6,13 @@ interface User {
 }
 
 interface Trip {
-  id: string;
-  userId: string;
-  user: User;
   title: string;
   destination: string;
   startDate: Date;
   endDate: Date;
-  itinerary?: Itinerary[];
 }
 
 interface Itinerary {
-  id: string;
-  tripId: string;
   trip: Trip;
   date: Date;
   day: number;
@@ -26,8 +20,6 @@ interface Itinerary {
 }
 
 interface Activity {
-  id: string;
-  itineraryId: string;
   title: string;
   location: string;
   startTime: Date;
