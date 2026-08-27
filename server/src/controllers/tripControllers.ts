@@ -7,7 +7,7 @@ const getTrips = async (req: JWTRequest, res: Response) => {
 
   // Check if there's a userId
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
   // Get all trips for the user
@@ -24,12 +24,14 @@ const getTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if there's a userId
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
   // Check if there's a tripId
   if (!tripId) {
-    return res.status(400).json({ message: "Trip ID is required" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "Trip ID is required" });
   }
 
   // Get the trip
@@ -39,7 +41,7 @@ const getTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if the trip exists
   if (!trip) {
-    return res.status(404).json({ message: "Trip not found" });
+    return res.status(404).json({ status: "error", message: "Trip not found" });
   }
 
   return res.status(200).json({ status: "success", data: { trip } });
@@ -51,12 +53,14 @@ const createTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if there's a userId
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
   // Check if any of the fields are empty
   if (!title || !destination || !startDate || !endDate) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "All fields are required" });
   }
 
   // Date inputs submit `yyyy-MM-dd`, but Prisma requires a full DateTime.
@@ -64,7 +68,17 @@ const createTrip = async (req: JWTRequest, res: Response) => {
   const end = new Date(endDate);
 
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    return res.status(400).json({ message: "Invalid start or end date" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "Invalid start or end date" });
+  }
+
+  // The end date can't come before the start date
+  if (start > end) {
+    return res.status(400).json({
+      status: "error",
+      message: "End date cannot be before start date",
+    });
   }
 
   // Create the trip
@@ -82,22 +96,28 @@ const updateTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if there's a userId
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
   // Check if there's a tripId
   if (!tripId) {
-    return res.status(400).json({ message: "Trip ID is required" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "Trip ID is required" });
   }
 
   // Check for empty fields
   if (!id || !title || !destination || !startDate || !endDate) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "All fields are required" });
   }
 
   // Check if the tripId matches the id
   if (tripId !== id) {
-    return res.status(400).json({ message: "Trip ID does not match" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "Trip ID does not match" });
   }
 
   const trip = await prisma.trip.findUnique({
@@ -106,7 +126,7 @@ const updateTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if the trip exists
   if (!trip) {
-    return res.status(404).json({ message: "Trip not found" });
+    return res.status(404).json({ status: "error", message: "Trip not found" });
   }
 
   // Date inputs submit `yyyy-MM-dd`, but Prisma requires a full DateTime.
@@ -114,7 +134,17 @@ const updateTrip = async (req: JWTRequest, res: Response) => {
   const end = new Date(endDate);
 
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    return res.status(400).json({ message: "Invalid start or end date" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "Invalid start or end date" });
+  }
+
+  // The end date can't come before the start date
+  if (start > end) {
+    return res.status(400).json({
+      status: "error",
+      message: "End date cannot be before start date",
+    });
   }
 
   // Update the trip
@@ -134,12 +164,14 @@ const deleteTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if there's a userId
   if (!userId) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
   // Check if there's a tripId
   if (!tripId) {
-    return res.status(400).json({ message: "Trip ID is required" });
+    return res
+      .status(400)
+      .json({ status: "error", message: "Trip ID is required" });
   }
 
   const trip = await prisma.trip.findUnique({
@@ -148,7 +180,7 @@ const deleteTrip = async (req: JWTRequest, res: Response) => {
 
   // Check if the trip exists
   if (!trip) {
-    return res.status(404).json({ message: "Trip not found" });
+    return res.status(404).json({ status: "error", message: "Trip not found" });
   }
 
   // Delete the trip

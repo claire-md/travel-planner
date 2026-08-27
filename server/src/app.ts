@@ -4,8 +4,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { connectDB, disconnectDB } from "./db/prisma.ts";
 import { requireAuth } from "./middleware/requireAuth.ts";
+import { notFound, errorHandler } from "./middleware/errorHandler.ts";
 import authRoutes from "./routes/authRoutes.ts";
+import userRoutes from "./routes/userRoutes.ts";
 import tripRoutes from "./routes/tripRoutes.ts";
+import itineraryRoutes from "./routes/itineraryRoutes.ts";
+import activityRoutes from "./routes/activityRoutes.ts";
 
 // Connect to DB
 connectDB();
@@ -28,10 +32,17 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", requireAuth, userRoutes);
 app.use("/api/trips", requireAuth, tripRoutes);
+app.use("/api/itineraries", requireAuth, itineraryRoutes);
+app.use("/api/activities", requireAuth, activityRoutes);
 app.get("/", (req: Request, res: Response) => {
   res.send("Home");
 });
+
+// Unmatched routes and the central error handler must come after the routes.
+app.use(notFound);
+app.use(errorHandler);
 
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

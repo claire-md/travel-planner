@@ -7,13 +7,15 @@ import {
 
 const router = express.Router();
 
+// No :id since we're getting the user from the JWT token
+
 // GET
-router.get("/:id", getUser);
+router.get("/", getUser);
 
 // PUT
-router.put("/:id", updateUser);
+router.put("/", updateUser);
 
 // DELETE
-router.delete("/:id", deleteUser);
+router.delete("/", deleteUser);
 
 export default router;

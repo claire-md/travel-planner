@@ -3,10 +3,10 @@ import { type Request as JWTRequest } from "express-jwt";
 import { prisma } from "../db/prisma.ts";
 
 const getUser = async (req: JWTRequest, res: Response) => {
-  const userId = req.auth?.id; // Get the userId from the JWT token
+  const userId = req.auth?.id;
 
-  // Check if the userId and the id in the request are the same
-  if (userId !== req.params.id) {
+  // Check there's a userId
+  if (!userId) {
     return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
@@ -20,47 +20,74 @@ const getUser = async (req: JWTRequest, res: Response) => {
     return res.status(404).json({ status: "error", message: "User not found" });
   }
 
-  return res.status(200).json({ status: "success", data: { user } });
+  return res.status(200).json({
+    status: "success",
+    data: {
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    },
+  });
 };
 
 const updateUser = async (req: JWTRequest, res: Response) => {
   const userId = req.auth?.id;
+  const { firstName, lastName, email } = req.body;
 
-  // Check if the userId and the id in the request are the same
-  if (userId !== req.params.id) {
+  // Check for empty fields
+  if (!firstName || !lastName || !email) {
+    return res
+      .status(400)
+      .json({ status: "error", message: "All fields are required" });
+  }
+
+  // Check there's a userId
+  if (!userId) {
     return res.status(401).json({ status: "error", message: "Unauthorized" });
+  }
+
+  // Reject a new email that another account already uses. The unique index
+  // enforces this too, but an explicit check gives a clearer message.
+  const emailOwner = await prisma.user.findUnique({ where: { email } });
+
+  if (emailOwner && emailOwner.id !== userId) {
+    return res
+      .status(409)
+      .json({ status: "error", message: "Email already in use" });
   }
 
   const user = await prisma.user.update({
     where: { id: userId },
-    data: req.body,
+    data: { firstName, lastName, email },
   });
 
-  // Check the user was updated
-  if (!user) {
-    return res.status(404).json({ status: "error", message: "User not found" });
-  }
-
-  return res.status(200).json({ status: "success", data: { user } });
+  return res.status(200).json({
+    status: "success",
+    data: {
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    },
+  });
 };
 
 const deleteUser = async (req: JWTRequest, res: Response) => {
   const userId = req.auth?.id;
 
-  // Check if the userId and the id in the request are the same
-  if (userId !== req.params.id) {
+  // Check there's a userId
+  if (!userId) {
     return res.status(401).json({ status: "error", message: "Unauthorized" });
   }
 
   // Delete the user
-  const user = await prisma.user.delete({
+  await prisma.user.delete({
     where: { id: userId },
   });
-
-  // Check the user was deleted
-  if (!user) {
-    return res.status(404).json({ status: "error", message: "User not found" });
-  }
 
   return res.status(200).json({
     status: "success",
