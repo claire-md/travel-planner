@@ -6,7 +6,12 @@
   "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/app.ts"
+    "dev": "tsx watch src/app.ts",
+    "build": "prisma generate",
+    "start": "prisma migrate deploy && tsx src/app.ts"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
@@ -17,7 +22,9 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-jwt": "^8.5.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^7.9.1",
+    "tsx": "^4.23.12"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -28,8 +35,6 @@
     "@types/express-jwt": "^6.0.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.2.0",
-    "prisma": "^7.9.1",
-    "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   },
   "allowScripts": {

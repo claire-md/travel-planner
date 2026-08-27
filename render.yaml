@@ -1,0 +1,27 @@
+# Render blueprint for the Express API in `server/`.
+# The Next.js app in `web/` is deployed separately on Vercel.
+services:
+  - type: web
+    name: travel-planner-server
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      # Render sets PORT automatically; the app reads process.env.PORT.
+      - key: ENVIRONMENT
+        value: production
+      # Secrets and connection strings are set in the Render dashboard.
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        sync: false
+      # The deployed frontend origin, used for CORS.
+      - key: PROD_CLIENT_URL
+        sync: false
