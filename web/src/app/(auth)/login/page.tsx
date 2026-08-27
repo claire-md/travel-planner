@@ -33,13 +33,7 @@ const LoginPage = () => {
     }
 
     try {
-      const data = await callApi(
-        "/api/auth/login",
-        "POST",
-        formData,
-        "Failed to login",
-      );
-      console.log(data);
+      await callApi("/api/auth/login", "POST", formData);
 
       setFormData(initialFormState);
       router.push("/dashboard");
@@ -101,6 +95,14 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+              <Button
+                color="link-color"
+                size="sm"
+                href="/forgot-password"
+                className="self-end"
+              >
+                Forgot password?
+              </Button>
             </div>
           </div>
 

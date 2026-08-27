@@ -1,8 +1,7 @@
 export default async function callApi(
   path: string,
   method: string,
-  body?: any,
-  errorMessage: string = "Failed to call API",
+  body?: unknown,
 ) {
   const response = await fetch(path, {
     method,
@@ -13,7 +12,13 @@ export default async function callApi(
   });
 
   if (!response.ok) {
-    throw new Error(errorMessage);
+    // Prefer the API's own message. Fall back to the status text for responses
+    // that aren't the JSON error envelope, such as a proxy or gateway failure.
+    const errorBody = await response.json().catch(() => null);
+
+    throw new Error(
+      errorBody?.message || response.statusText || "Something went wrong",
+    );
   }
 
   return await response.json();

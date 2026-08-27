@@ -30,17 +30,12 @@ const TripsPage = () => {
       setLoading(true);
 
       try {
-        const data = await callApi(
-          "/api/trips",
-          "GET",
-          undefined,
-          "Failed to fetch trips",
-        );
+        const data = await callApi("/api/trips", "GET", undefined);
+
         setTrips(data.data.trips);
         setError(null);
       } catch (error) {
-        console.error(error);
-        setError(new Error("Failed to fetch trips"));
+        setError(error as Error);
       } finally {
         setLoading(false);
       }
@@ -116,13 +111,11 @@ const TripsPage = () => {
 
         {!error && !loading && trips.length > 0 && (
           <ul className="flex flex-col gap-3">
-            {trips.map((trip, index) => {
-              const { id } = trip as Trip & { id?: string };
-
+            {trips.map((trip) => {
               return (
-                <li key={id ?? index}>
+                <li key={trip.id}>
                   <Link
-                    href={`/trips/${id}`}
+                    href={`/trips/${trip.id}`}
                     className="group flex flex-col gap-3 rounded-2xl bg-primary p-5 shadow-xs ring-1 ring-secondary transition duration-100 ease-linear hover:shadow-md hover:ring-brand sm:flex-row sm:items-center sm:gap-6"
                   >
                     <div className="flex min-w-0 flex-1 flex-col gap-1">

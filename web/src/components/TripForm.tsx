@@ -8,7 +8,10 @@ import { Label } from "@/components/base/input/label";
 import validateForm from "@/utils/validateForm";
 import callApi from "@/utils/callApi";
 
-const initialFormState: Trip = {
+// The server generates the id, so the form only ever holds the editable fields.
+type TripFormData = Omit<Trip, "id">;
+
+const initialFormState: TripFormData = {
   title: "",
   destination: "",
   startDate: new Date(),
@@ -30,12 +33,25 @@ const toDateInputValue = (value: Date | string) => {
 };
 
 interface TripFormProps {
-  /** Called once a trip has been created successfully. */
+  /** Called once a trip has been created or updated successfully. */
   onSuccess?: () => void;
+  /** An existing trip to edit. When omitted the form creates a new trip. */
+  trip?: Trip;
 }
 
-export const TripForm = ({ onSuccess }: TripFormProps) => {
-  const [formData, setFormData] = useState<Trip>(initialFormState);
+export const TripForm = ({ onSuccess, trip }: TripFormProps) => {
+  const isEdit = Boolean(trip);
+
+  const [formData, setFormData] = useState<TripFormData>(
+    trip
+      ? {
+          title: trip.title,
+          destination: trip.destination,
+          startDate: trip.startDate,
+          endDate: trip.endDate,
+        }
+      : initialFormState,
+  );
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -50,20 +66,18 @@ export const TripForm = ({ onSuccess }: TripFormProps) => {
     }
 
     try {
-      const data = await callApi(
-        "/api/trips",
-        "POST",
-        formData,
-        "Failed to create trip",
-      );
-      console.log(data);
+      if (trip) {
+        // The update endpoint also expects the id in the body, not just the URL.
+        await callApi(`/api/trips/${trip.id}`, "PUT", { id: trip.id, ...formData });
+      } else {
+        await callApi("/api/trips", "POST", formData);
+      }
 
       setError(null);
-      setFormData(initialFormState);
+      setFormData(isEdit ? formData : initialFormState);
       onSuccess?.();
     } catch (error) {
-      console.error(error);
-      setError(new Error("Failed to create trip"));
+      setError(error as Error);
     } finally {
       setLoading(false);
     }
@@ -141,7 +155,7 @@ export const TripForm = ({ onSuccess }: TripFormProps) => {
         isDisabled={loading}
         className="w-full"
       >
-        Create trip
+        {isEdit ? "Save changes" : "Create trip"}
       </Button>
     </form>
   );

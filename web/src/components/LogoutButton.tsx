@@ -12,7 +12,7 @@ export const LogoutButton = ({
 
   const handleLogout = async () => {
     try {
-      await callApi("/api/auth/logout", "POST", {}, "Failed to logout");
+      await callApi("/api/auth/logout", "POST", {});
       router.push("/login");
     } catch (error) {
       console.error(error);

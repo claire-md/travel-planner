@@ -9,7 +9,12 @@
 // email            required
 // password         required
 
-export default function validateForm(formData: any, requiredFields: string[]) {
+export default function validateForm(
+  data: unknown,
+  requiredFields: string[],
+) {
+  const formData = (data ?? {}) as Record<string, unknown>;
+
   for (const field of requiredFields) {
     const value = formData[field];
     if (!value || value === "") {
@@ -17,18 +22,20 @@ export default function validateForm(formData: any, requiredFields: string[]) {
     }
   }
 
-  if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-    return false;
-  }
-
-  if (formData.password && formData.password.length < 8) {
-    return false;
-  }
+  const { email, password, confirmPassword } = formData;
 
   if (
-    formData.confirmPassword &&
-    formData.confirmPassword !== formData.password
+    typeof email === "string" &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   ) {
+    return false;
+  }
+
+  if (typeof password === "string" && password.length < 8) {
+    return false;
+  }
+
+  if (confirmPassword && confirmPassword !== password) {
     return false;
   }
 

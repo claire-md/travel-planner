@@ -1,3 +1,6 @@
+// Date and time fields are typed as `Date | string` because they arrive from the
+// API as JSON strings, even though Prisma models them as dates on the server.
+
 interface User {
   firstName: string;
   lastName: string;
@@ -6,22 +9,27 @@ interface User {
 }
 
 interface Trip {
+  id: string;
   title: string;
   destination: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
 }
 
 interface Itinerary {
-  trip: Trip;
-  date: Date;
+  id: string;
+  tripId: string;
+  date: Date | string;
   day: number;
-  activities: Activity[];
+  // Only present on endpoints that include the day's activities.
+  activities?: Activity[];
 }
 
 interface Activity {
+  id: string;
+  itineraryId: string;
   title: string;
   location: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | string;
+  endTime: Date | string;
 }

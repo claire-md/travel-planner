@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 // 1. Specify protected and public routes
 const protectedRoutes = ["/dashboard", "/trips", "/account"];
-const publicRoutes = ["/login", "/signup", "/"];
+const publicRoutes = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/",
+];
 
 export default async function proxy(req: NextRequest) {
   // 2. Check if the current route is protected or public

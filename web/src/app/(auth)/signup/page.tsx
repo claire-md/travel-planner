@@ -42,13 +42,7 @@ const SignupPage = () => {
     }
 
     try {
-      const data = await callApi(
-        "/api/auth/signup",
-        "POST",
-        formData,
-        "Failed to sign up",
-      );
-      console.log(data);
+      await callApi("/api/auth/signup", "POST", formData);
 
       setFormData(initialFormState);
       router.push("/dashboard");
@@ -153,6 +147,7 @@ const SignupPage = () => {
             type="submit"
             size="lg"
             isLoading={loading}
+            isDisabled={loading}
             className="w-full"
           >
             Create account
